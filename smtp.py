@@ -1,37 +1,36 @@
-import os
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from getpass import getpass
 
-TO_EMAIL = "yaircostac@hotmail.com"
+def send_hola():
+    smtp_server = "smtp.gmail.com"
+    port = 587
+ 
 
-def send_one_email():
-    smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
-    smtp_port = int(os.getenv("SMTP_PORT", "587"))
-    smtp_user = os.getenv("kenyaportout@gmail.com")   # tu correo remitente
-    smtp_pass = os.getenv("pxhqgixiijmtjqfv")   # tu clave/app password
-     if not smtp_user or not smtp_pass:
-        raise RuntimeError("Faltan SMTP_USER/SMTP_PASS en variables de entorno.")
 
-    subject = "Mensaje de prueba"
-    body = "Hola, este es un correo de prueba enviado desde Python."
+ 
+    sender_email = ("kenyaportout@gmail.com").strip()
+    app_password = ("pxhqgixiijmtjqfv").strip()  # no se muestra al escribir
+    receiver_email = "yaircostac@hotmail.com"
 
-    msg = MIMEText(body, "plain", "utf-8")
-    msg["Subject"] = subject
-    msg["From"] = smtp_user
-    msg["To"] = TO_EMAIL
+    if not sender_email or not app_password:
+        raise ValueError("Email o App Password vacíos.")
 
-    with smtplib.SMTP(smtp_host, smtp_port) as server:
+    message = MIMEMultipart()
+    message["Subject"] = "Saludo"
+    message["From"] = sender_email
+    message["To"] = receiver_email
+    message.attach(MIMEText("HOLA", "plain", "utf-8"))
+
+    with smtplib.SMTP(smtp_server, port) as server:
         server.ehlo()
         server.starttls()
         server.ehlo()
-        server.login(smtp_user, smtp_pass)
-        server.sendmail(smtp_user, [TO_EMAIL], msg.as_string())
+        server.login(sender_email, app_password)
+        server.sendmail(sender_email, receiver_email, message.as_string())
 
-    print(f"Correo enviado a {TO_EMAIL}")
+    print("Correo enviado: HOLA")
 
-if __name__ == "__main__":
-    send_one_email()
+send_hola()
 
-
-
-main()
